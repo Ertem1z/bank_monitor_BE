@@ -2,3 +2,7 @@
 /workspace.xml
 # Datasource local storage ignored files
 /dataSources/
+/dataSources.local.xml
+* .sqlite3
+* .log
+tmp
