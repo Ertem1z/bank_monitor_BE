@@ -214,6 +214,6 @@ def realtime_data(request):
         data_all["mem_usage_rate"] = realtime_memory.mem_usage_rate
         data_all["available_memory"] = realtime_memory.available_memory
         data_all["swap_usage_rate"] = realtime_memory.swap_usage_rate
-        
+
     print("查询成功！返回实时数据...")
     return HttpResponse(json.dumps(data_all))

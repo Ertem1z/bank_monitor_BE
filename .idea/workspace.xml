@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="895eeb75-35b8-4b80-9f69-4ca22cd1bb9f" name="Default Changelist" comment="" />
+    <list default="true" id="895eeb75-35b8-4b80-9f69-4ca22cd1bb9f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Monitor/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Monitor/views.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -52,8 +55,12 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="JupyterTrust" id="2ea2d1e8-3edd-444e-8def-8e1f219d3d45" />
   <component name="ProjectId" id="1dby2vrDYe8yTg27elHttgWF0q9" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -119,7 +126,7 @@
       <workItem from="1592965292264" duration="4316000" />
       <workItem from="1593011234319" duration="1252000" />
       <workItem from="1593057481081" duration="13840000" />
-      <workItem from="1593143590946" duration="6038000" />
+      <workItem from="1593143590946" duration="7038000" />
     </task>
     <servers />
   </component>
