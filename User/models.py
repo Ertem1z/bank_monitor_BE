@@ -3,7 +3,7 @@ from django.db import models
 
 # Create your models here.
 class Users(models.Model):
-    userid = models.IntegerField(max_length=16, primary_key=True, verbose_name='用户id')
+    userid = models.IntegerField(primary_key=True, verbose_name='用户id')
     username = models.CharField(max_length=32, null=False, verbose_name='用户名')
     password = models.IntegerField(null=False, verbose_name='用户密码')
 

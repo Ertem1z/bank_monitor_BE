@@ -4,6 +4,7 @@ import random
 import datetime
 
 from Monitor.serializers import CPUSerializer, NetWorkSerializer, SystemMemorySerializer
+from Warning.models import Thresholds, PercentileThresholds
 from django.core import serializers
 from django.shortcuts import render
 from django.utils.datetime_safe import strftime
@@ -34,34 +35,13 @@ class HistoricalData(APIView):
         endstamp = int(int(str(request.POST.get("date[1]")).strip()) / 1000)
         s = datetime.datetime.fromtimestamp(startstamp)
         e = datetime.datetime.fromtimestamp(endstamp)
-        # print(s)
-        # print(e)
-        # start_date = datetime.datetime.strptime(start, "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]")
-        # end_date = datetime.datetime.strptime(end, "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]")
 
         if ip_address is None:
             print("ip信息缺失！")
             return HttpResponse("ip信息缺失！")
 
         else:
-            # data_all = {}
-            # cpu = CPU.objects.filter(ip_address=ip_address, time__range=(s, e))
-            # cpu_serializer = CPUSerializer(cpu, many=True)
-            # nw = Network.objects.filter(ip_address=ip_address, time__range=(s,e))
-            # nw_serializer = NetWorkSerializer(nw, many=True)
-            # memory = SystemMemory.objects.filter(ip_address=ip_address, time__range=(s,e))
-            # memory_serializer = SystemMemorySerializer(memory, many=True)
-            #
-            # data_all['cpu'] = cpu_serializer.data
-            # data_all['network'] = nw_serializer.data
-            # data_all['memory'] = memory_serializer.data
-            # # data_all = {'cpu': cpu_serializer.data, 'network': nw_serializer.data, 'systemmemory': memory_serializer.data}
-            # if data_all :
-            #     print("查询成功！返回结果中...")
-            #     return HttpResponse(json.dumps(data_all))
-            # else:
-            #     print("无查询结果！")
-            #     return HttpResponse("无查询结果！")
+
             cpu_time = []
             nw_time = []
             memory_time = []
@@ -77,9 +57,6 @@ class HistoricalData(APIView):
             cpu_data = CPU.objects.filter(ip_address=ip_address, time__range=(s, e)).values()
             nw_data = Network.objects.filter(ip_address=ip_address, time__range=(s, e)).values()
             memory_data = SystemMemory.objects.filter(ip_address=ip_address, time__range=(s, e)).values()
-            # cpu_serializer = serializers.serialize("json", cpu_data)
-            # nw_serializer = serializers.serialize("json", nw_data)
-            # memory_serializer = serializers.serialize("json", memory_data)
 
             for cpu in cpu_data:
                 print(cpu.get('time'))
@@ -91,9 +68,9 @@ class HistoricalData(APIView):
             for nw in nw_data:
                 # print(nw)
                 nw_time.append(str(nw.get('time')))
-                dev_io_read_rate.append(nw.get('tcp_passiveopens'))
-                dev_io_write_rate.append(nw.get('tcp_activeopens'))
-                dev_io_usage_rate.append(nw.get('close_wait_count'))
+                dev_io_read_rate.append(nw.get('dev_io_read_rate'))
+                dev_io_write_rate.append(nw.get('dev_io_write_rate'))
+                dev_io_usage_rate.append(nw.get('dev_io_usage_rate'))
 
             for memory in memory_data:
                 # print(memory)
@@ -102,6 +79,38 @@ class HistoricalData(APIView):
                 available_memory.append(memory.get('available_memory'))
                 swap_usage_rate.append(memory.get('swap_usage_rate'))
 
+            # 获取阈值
+            pre_th = Thresholds.objects.filter(ip_address=ip_address).last()
+
+            line_cpu_used_total = [pre_th.cpu_used_total_t1,
+                                   pre_th.cpu_used_total_t2,
+                                   pre_th.cpu_used_total_t3]
+            line_cpu_system_used = [pre_th.cpu_system_used_t1,
+                                    pre_th.cpu_system_used_t2,
+                                    pre_th.cpu_system_used_t3]
+            line_cpu_user_used = [pre_th.cpu_user_used_t1,
+                                  pre_th.cpu_user_used_t2,
+                                  pre_th.cpu_user_used_t3]
+            line_available_memory = [pre_th.available_memory_t1,
+                                     pre_th.available_memory_t2,
+                                     pre_th.available_memory_t3]
+            line_mem_usage_rate = [pre_th.mem_usage_rate_t1,
+                                   pre_th.mem_usage_rate_t2,
+                                   pre_th.mem_usage_rate_t3]
+            line_swap_usage_rate = [pre_th.swap_usage_rate_t1,
+                                    pre_th.swap_usage_rate_t2,
+                                    pre_th.swap_usage_rate_t3]
+            line_dev_io_read_rate = [pre_th.dev_io_read_rate_t1,
+                                     pre_th.dev_io_read_rate_t2,
+                                     pre_th.dev_io_read_rate_t3]
+            line_dev_io_write_rate = [pre_th.dev_io_write_rate_t1,
+                                      pre_th.dev_io_write_rate_t2,
+                                      pre_th.dev_io_write_rate_t3]
+            line_dev_io_usage_rate = [pre_th.dev_io_usage_rate_t1,
+                                      pre_th.dev_io_usage_rate_t2,
+                                      pre_th.dev_io_usage_rate_t3]
+
+            # 构造字典装载数据
             data_all = {}
             data_all["cpu_time"] = cpu_time
             data_all["nw_time"] = nw_time
@@ -115,6 +124,17 @@ class HistoricalData(APIView):
             data_all["mem_usage_rate"] = mem_usage_rate
             data_all["available_memory"] = available_memory
             data_all["swap_usage_rate"] = swap_usage_rate
+
+            # 阈值线
+            data_all['line_cpu_used_total'] = line_cpu_used_total
+            data_all['line_cpu_system_used'] = line_cpu_system_used
+            data_all['line_cpu_user_used'] = line_cpu_user_used
+            data_all['line_available_memory'] = line_available_memory
+            data_all['line_mem_usage_rate'] = line_mem_usage_rate
+            data_all['line_swap_usage_rate'] = line_swap_usage_rate
+            data_all['line_dev_io_read_rate'] = line_dev_io_read_rate
+            data_all['line_dev_io_write_rate'] = line_dev_io_write_rate
+            data_all['line_dev_io_usage_rate'] = line_dev_io_usage_rate
 
             if data_all:
                 print("查询成功！返回结果中...")
@@ -146,9 +166,9 @@ def add_data(request):
         cpu.save()
         network = Network()
         network.ip_address = ip
-        network.close_wait_count = random.randint(0, 100)
-        network.tcp_activeopens = random.random()
-        network.tcp_passiveopens = random.random()
+        network.dev_io_usage_rate = random.randint(0, 100)
+        network.dev_io_write_rate = random.random()
+        network.dev_io_read_rate = random.random()
         network.save()
         memory = SystemMemory()
         memory.ip_address = ip
@@ -171,24 +191,52 @@ def get_realtime_data(request):
         cpu = CPU()
         cpu.ip_address = ip
         cpu.cpu_average_5min = random.random() * 100
-        cpu.cpu_system_used = random.random() * 100
-        cpu.cpu_used_total = random.random() * 100
-        cpu.cpu_user_used = random.random() * 100
         cpu.cpu_io_wait = random.randint(0, 100)
+        csu = random.random() * 100
+        cut = random.random() * 100
+        cuu = random.random() * 100
+        cpu.cpu_system_used = csu
+        cpu.cpu_used_total = cut
+        cpu.cpu_user_used = cuu
         cpu.save()
+
         network = Network()
         network.ip_address = ip
-        network.close_wait_count = random.randint(0, 100)
-        network.tcp_activeopens = random.random() * 100
-        network.tcp_passiveopens = random.random() * 100
+        nc = random.randint(0, 100)
+        nta = random.random() * 100
+        ntp = random.random() * 100
+        network.dev_io_usage_rate = nc
+        network.dev_io_write_rate = nta
+        network.dev_io_read_rate = ntp
         network.save()
+
         memory = SystemMemory()
         memory.ip_address = ip
-        memory.available_memory = random.random() * 100
         memory.free_swap_spacecon = random.random() * 100
-        memory.mem_usage_rate = random.random() * 100
-        memory.swap_usage_rate = random.random() * 100
+        mam = random.random() * 100
+        mur = random.random() * 100
+        msu = random.random() * 100
+        memory.available_memory = mam
+        memory.mem_usage_rate = mur
+        memory.swap_usage_rate = msu
         memory.save()
+
+        pt = PercentileThresholds.objects.filter(ip_address=ip).last()
+        pre_th = Thresholds.objects.filter(ip_address=ip).last()
+        print(type(pt), type(pre_th))
+        pre_th.cpu_used_total_t3 = max(pre_th.cpu_used_total_t3, cut * pt.cpu_used_total_p3)
+        pre_th.cpu_user_used_t3 = max(pre_th.cpu_user_used_t3, cuu * pt.cpu_user_used_p3)
+        pre_th.cpu_system_used_t3 = max(pre_th.cpu_system_used_t3, csu * pt.cpu_system_used_p3)
+
+        pre_th.dev_io_write_rate_t3 = max(pre_th.dev_io_write_rate_t3, nta * pt.dev_io_write_rate_p3)
+        pre_th.dev_io_read_rate_t3 = max(pre_th.dev_io_read_rate_t3, ntp * pt.dev_io_read_rate_p3)
+        pre_th.dev_io_usage_rate_t3 = max(pre_th.dev_io_usage_rate_t3, csu * pt.dev_io_usage_rate_p3)
+
+        pre_th.mem_usage_rate_t3 = max(pre_th.mem_usage_rate_t3, mur * pt.mem_usage_rate_p3)
+        pre_th.swap_usage_rate_t3 = max(pre_th.swap_usage_rate_t3, msu * pt.swap_usage_rate_p3)
+        pre_th.available_memory_t3 = max(pre_th.available_memory_t3, mam * pt.available_memory_p3)
+        pre_th.save()
+
     return HttpResponse("实时数据加入成功！")
 
 
@@ -208,12 +256,12 @@ def realtime_data(request):
         data_all["CPU_used_total"] = realtime_cpu.cpu_used_total
         data_all["CPU_used_user"] = realtime_cpu.cpu_user_used
         data_all["CPU_used_system"] = realtime_cpu.cpu_system_used
-        data_all["dev_io_read_rate"] = realtime_nw.tcp_passiveopens
-        data_all["dev_io_write_rate"] = realtime_nw.tcp_activeopens
-        data_all["dev_io_usage_rate"] = realtime_nw.close_wait_count
+        data_all["dev_io_read_rate"] = realtime_nw.dev_io_read_rate
+        data_all["dev_io_write_rate"] = realtime_nw.dev_io_write_rate
+        data_all["dev_io_usage_rate"] = realtime_nw.dev_io_usage_rate
         data_all["mem_usage_rate"] = realtime_memory.mem_usage_rate
         data_all["available_memory"] = realtime_memory.available_memory
         data_all["swap_usage_rate"] = realtime_memory.swap_usage_rate
-        
+
     print("查询成功！返回实时数据...")
     return HttpResponse(json.dumps(data_all))

@@ -1,0 +1,72 @@
+from django.db import models
+
+
+# Create your models here.
+class PercentileThresholds(models.Model):
+    ip_address = models.CharField(max_length=32, null= False)
+    cpu_used_total_p1 = models.FloatField(default=0.75)
+    cpu_used_total_p2 = models.FloatField(default=0.75)
+    cpu_used_total_p3 = models.FloatField(default=0.75)
+    cpu_user_used_p1 = models.FloatField(default=0.75)
+    cpu_user_used_p2 = models.FloatField(default=0.75)
+    cpu_user_used_p3 = models.FloatField(default=0.75)
+    cpu_system_used_p1 = models.FloatField(default=0.75)
+    cpu_system_used_p2 = models.FloatField(default=0.75)
+    cpu_system_used_p3 = models.FloatField(default=0.75)
+
+    dev_io_write_rate_p1 = models.FloatField(default=0.75)
+    dev_io_write_rate_p2 = models.FloatField(default=0.75)
+    dev_io_write_rate_p3 = models.FloatField(default=0.75)
+    dev_io_read_rate_p1 = models.FloatField(default=0.75)
+    dev_io_read_rate_p2 = models.FloatField(default=0.75)
+    dev_io_read_rate_p3 = models.FloatField(default=0.75)
+    dev_io_usage_rate_p1 = models.FloatField(default=0.75)
+    dev_io_usage_rate_p2 = models.FloatField(default=0.75)
+    dev_io_usage_rate_p3 = models.FloatField(default=0.75)
+
+    mem_usage_rate_p1 = models.FloatField(default=0.75)
+    mem_usage_rate_p2 = models.FloatField(default=0.75)
+    mem_usage_rate_p3 = models.FloatField(default=0.75)
+    swap_usage_rate_p1 = models.FloatField(default=0.75)
+    swap_usage_rate_p2 = models.FloatField(default=0.75)
+    swap_usage_rate_p3 = models.FloatField(default=0.75)
+    available_memory_p1 = models.FloatField(default=0.75)
+    available_memory_p2 = models.FloatField(default=0.75)
+    available_memory_p3 = models.FloatField(default=0.75)
+
+    contact = models.CharField(max_length=32)
+    contact_email = models.CharField(max_length=64)
+    time = models.DateTimeField(auto_now_add=True)
+
+
+class Thresholds(models.Model):
+    ip_address = models.CharField(max_length=32)
+    cpu_used_total_t1 = models.FloatField(default=0)
+    cpu_used_total_t2 = models.FloatField(default=0)
+    cpu_used_total_t3 = models.FloatField(default=0)
+    cpu_user_used_t1 = models.FloatField(default=0)
+    cpu_user_used_t2 = models.FloatField(default=0)
+    cpu_user_used_t3 = models.FloatField(default=0)
+    cpu_system_used_t1 = models.FloatField(default=0)
+    cpu_system_used_t2 = models.FloatField(default=0)
+    cpu_system_used_t3 = models.FloatField(default=0)
+
+    dev_io_write_rate_t1 = models.FloatField(default=0)
+    dev_io_write_rate_t2 = models.FloatField(default=0)
+    dev_io_write_rate_t3 = models.FloatField(default=0)
+    dev_io_read_rate_t1 = models.FloatField(default=0)
+    dev_io_read_rate_t2 = models.FloatField(default=0)
+    dev_io_read_rate_t3 = models.FloatField(default=0)
+    dev_io_usage_rate_t1 = models.FloatField(default=0)
+    dev_io_usage_rate_t2 = models.FloatField(default=0)
+    dev_io_usage_rate_t3 = models.FloatField(default=0)
+
+    mem_usage_rate_t1 = models.FloatField(default=0)
+    mem_usage_rate_t2 = models.FloatField(default=0)
+    mem_usage_rate_t3 = models.FloatField(default=0)
+    swap_usage_rate_t1 = models.FloatField(default=0)
+    swap_usage_rate_t2 = models.FloatField(default=0)
+    swap_usage_rate_t3 = models.FloatField(default=0)
+    available_memory_t1 = models.FloatField(default=0)
+    available_memory_t2 = models.FloatField(default=0)
+    available_memory_t3 = models.FloatField(default=0)
